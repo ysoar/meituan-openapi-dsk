@@ -17,7 +17,7 @@ composer require ysoar/meituan-openapi:dev-master
 
 ```php
     use MeituanOpenApi\Config\Config;
-    use MeituanOpenApi\Api\ProductService;
+    use MeituanOpenApi\Api\TakeAway\ProductService;
     
     //实例化一个配置类
     $config = new Config($this->developerId, $this->businessId, $this->signKey, false);
@@ -26,7 +26,7 @@ composer require ysoar/meituan-openapi:dev-master
     $productService = new ProductService($token, $config);
     
     //调用服务方法，获取资源
-    $shop = $productService->queryCateList(12345);
+    $cateList = $productService->queryCateList(12345);
 
 ```
 
