@@ -176,7 +176,7 @@ class OrderService extends RpcService
     }
 
 
-    /** 根据门店id, 批量查询待确认订单号列表(7.3.15)
+    /** 根据门店id, 批量查询待确认订单号列表 (官网已删除)
      * 查询5分钟内未确认的订单号列表，已经推送成功的订单号不再返回，一次传入查询的门店不可超过10个
      * @param string $epoiIds 商家门店号集合,中间用逗号隔开
      * @return mixed
@@ -187,7 +187,7 @@ class OrderService extends RpcService
     }
 
 
-    /** 根据开发者id, 批量查询待确认订单号列表(7.3.16)
+    /** 根据开发者id, 批量查询待确认订单号列表(7.3.15)
      * 查询近5分钟内未被商家确认的有效订单号列表，可多次拉取，一次拉取最多100单（按时间升序）
      * @param integer $developerId 开发者id
      * @param integer $maxOffsetId 上次拉取新单列表中最大的offserId，初始值可以为0
@@ -200,10 +200,11 @@ class OrderService extends RpcService
     }
 
 
-    /** 部分退款-查询部分退款商品(7.3.17)
+    /** 部分退款-查询部分退款商品(7.3.16)
      * 订单完成后，在商家发起部分退款前，查询可被部分退款的商品详情
      * @param string $orderId 订单Id
      * @return mixed
+     * @throws \MeituanOpenApi\Exception\BusinessException
      */
     public function queryPartRefundFoods($orderId)
     {
@@ -211,16 +212,31 @@ class OrderService extends RpcService
     }
 
 
-    /** 部分退款-申请部分退款(7.3.18)
+    /** 部分退款-申请部分退款(7.3.17)
      * 订单完成后，可以调用此接口发起部分退款
      * @param string $orderId 订单Id
      * @param string $reason 申请部分退款的具体原因
      * @param string $foodData 部分退款菜品详情 (没有sku，sku_id为空字符串"" ,count不能为0)
      * @return mixed
+     * @throws \MeituanOpenApi\Exception\BusinessException
      */
     public function applyPartRefund($orderId, $reason, $foodData)
     {
         return $this->client->call('post', 'waimai/order/applyPartRefund', ['orderId' => $orderId, 'reason' => $reason, 'foodData' => $foodData]);
+    }
+
+
+    /**
+     * 隐私号-批量拉取手机号
+     * @param integer $developerId   开发者id
+     * @param integer $degradOffset  分页查询的偏移量
+     * @param integer $degradLimit   每页条数，需小于等于1000
+     * @return mixed
+     * @throws \MeituanOpenApi\Exception\BusinessException
+     */
+    public function batchPullPhoneNumber($developerId, $degradOffset, $degradLimit)
+    {
+        return $this->client->call('post', 'waimai/order/batchPullPhoneNumber', ['developerId' => $developerId, 'degradOffset' => $degradOffset, 'degradLimit' => $degradLimit]);
     }
 
 

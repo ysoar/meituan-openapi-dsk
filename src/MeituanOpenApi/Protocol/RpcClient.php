@@ -1,6 +1,7 @@
 <?php
 
 namespace MeituanOpenApi\Protocol;
+
 use MeituanOpenApi\Config\Config;
 use MeituanOpenApi\Exception\BusinessException;
 use Exception;
@@ -59,12 +60,14 @@ class RpcClient
 
         //系统参数
         $protocol = array(
-            "appAuthToken" => $this->token,
             "charset" => 'UTF-8',
             "timestamp" => time(),
-            "version" => '1',
+            "version" => 1,
         );
 
+        if (!empty($this->token)) {
+            $protocol['appAuthToken'] = $this->token;
+        }
         //是否合并应用参数
         if ($is_merge) {
             $protocol = array_merge($protocol, $parameters);
@@ -127,7 +130,7 @@ class RpcClient
      */
     private function urlencodeParams($params)
     {
-        foreach ($params as $key=>&$val) {
+        foreach ($params as $key => &$val) {
             urlencode($val);
         }
         return $params;
@@ -150,10 +153,10 @@ class RpcClient
         }
 
         //头部设置    
-        $header = !empty($header) ? $header : array("Content-type: x-www-form-urlencoded");
+        $header = !empty($header) ? $header : array("Content-type: application/x-www-form-urlencoded");
 
         //url拼接参数, 生成urlencode之后的请求字符串 (请求参数中有中文时，中文需要经过url编码)
-        $url = $url. '?' . http_build_query($data);
+        $url = $url . '?' . http_build_query($data);
 
         //发起curl请求
         $ch = curl_init($url);
@@ -213,18 +216,18 @@ class RpcClient
         $data = $this->urlencodeParams($data);
 
         //头部设置    
-        $header = !empty($header) ? $header : array("Content-type: x-www-form-urlencoded");
+        $header = !empty($header) ? $header : array("Content-type: application/x-www-form-urlencoded");
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
         $response = curl_exec($ch);
 
-        //错误信息    
+        //错误信息
         if (curl_errno($ch)) {
             if ($log != null) {
                 $log->error("error: " . curl_error($ch));

@@ -78,6 +78,7 @@ class OAuthClient
      * 门店映射
      * @param $ePoiId
      * @return mixed
+     * @throws Exception
      */
     public function storemap($ePoiId)
     {
